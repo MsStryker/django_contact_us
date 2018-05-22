@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block context %}
+    <h1>{{ header }}</h1>
+    <div class="form">
+        <form class="sh-contact-form" action="" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <div class="input-group{% if form.category.errors %} has-danger{% endif %}">
+                    <span class="input-group-addon" id="basic-addon3"><i class="material-icons">drafts</i></span>
+                    {{ form.subject }}
+                    {% if form.subject.errors %}
+                        <span class="form-error">{{ form.subject.errors|join:", " }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="label-pull-right" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                <div class="input-group{% if form.subject.errors %} has-danger{% endif %}">
+                    <span class="input-group-addon" id="basic-addon1"><i class="material-icons">account_circle</i></span>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <span class="form-error">{{ form.name.errors|join:", " }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="label-pull-right" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                <div class="input-group{% if form.email.errors %} has-danger{% endif %}">
+                    <span class="input-group-addon" id="basic-addon2"><i class="material-icons">email</i></span>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <span class="form-error">{{ form.email.errors|join:", " }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="label-pull-right" for="{{ form.message.id_for_label }}">{{ form.message.label }}</label>
+                <div class="input-group{% if form.message.errors %} has-danger{% endif %}">
+                    <div class="char-count" id="remainingCount">0/250</div>
+                    <span class="input-group-addon" id="basic-addon4"><i class="material-icons">message</i></span>
+                    {{ form.message }}
+                    {% if form.message.errors %}
+                        <span class="form-error">{{ form.message.errors|join:", " }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="hidden-s0-up {% if form.bot_field.errors %} has-danger{% endif %}">
+                    <div class="input-group">
+                        <input class="form-control {% if form.bot_field.errors %}form-control-danger{% endif %}" id="id_bot_field" maxlength="50" name="bot_field" type="text" placeholder="For bots only" {% if form.bot_field.data %}value="{{ form.bot_field.data }}"{% endif %}>
+                        <small class="text-muted">{{ form.bot_field.help_text }}</small>
+                        {% if form.bot_field.errors %}
+                            <span class="form-error">{{ form.bot_field.errors|join:", " }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {{ form.ip_address }}
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-block" disabled>Submit</button>
+            </div>
+
+        </form>
+    </div>
+{% endblock %}
+{% block extra_javascript %}
+    <script type="text/javascript">
+        $(function() {
+            $('#id_message').keyup(function(){
+              var charCount = $(this).val().length;
+              $('#remainingCount').html(charCount + "/250");
+            });
+        });
+
+        function updateSubmitForm() {
+            var is_empty = false;
+            $('[required]').each(function(idx, elem) {
+                is_empty = is_empty || ($(elem).val() == '');
+                if ($('select[name="subject"]')[0].value == '') {
+                    is_empty = true;
+                }
+            });
+            if (!is_empty) {
+                $('button[type="submit"]').removeAttr('disabled');
+            } else {
+                $('button[type="submit"]').attr('disabled', 'true');
+            }
+        }
+        $('#id_subject').change(updateSubmitForm);
+        $('#id_name').change(updateSubmitForm).keydown(updateSubmitForm);
+        $('#id_email').change(updateSubmitForm).keydown(updateSubmitForm);
+        $('#id_message').change(updateSubmitForm).keydown(updateSubmitForm);
+    </script>
+{% endblock extra_javascript %}
